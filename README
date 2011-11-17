@@ -1,0 +1,48 @@
+A basic template for CRUD operations.
+
+To run:
+> ./sbt
+> container:start
+
+The main code:
+
+class EventOps extends Logger {
+  
+  object eventVar extends RequestVar[Event](null)
+ 
+  def processSubmit() = {
+    // add code to do validations etc
+     eventVar.save
+     S.redirectTo("/event/listevent")
+  }
+  
+  def create = {
+    eventVar(Event.create)
+    var event = eventVar.is
+    "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
+    "#eventname" #> eventVar.is.eventName.toForm &
+    "#submit" #> SHtml.onSubmitUnit(processSubmit)
+  }
+
+  def edit = {
+   val event = eventVar.is
+   "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
+   "#eventname" #> eventVar.is.eventName.toForm &
+   "#submit" #> SHtml.onSubmitUnit(processSubmit)
+  }
+
+ def list = {
+    val allEvents = Event.findAll
+    ".row *" #> allEvents.map( t => {
+      ".eventName *" #> Text(t.eventName) &
+      ".actions *" #> {SHtml.link("/event/viewevent", () => eventVar(t), Text("view")) ++ Text(" ") ++
+                 SHtml.link("/event/editevent", () => eventVar(t), Text("edit")) ++ Text(" ") ++
+                 SHtml.link("/event/listevent", () => {t.delete_!}, Text("delete"))}
+    } )          
+  }
+  def view = {
+    var event = eventVar.is
+    "#eventname *" #> eventVar.is.eventName.asHtml &
+    "#edit" #> SHtml.link("/event/editevent", () => (eventVar(event)), Text("edit"))
+  }
+ }
