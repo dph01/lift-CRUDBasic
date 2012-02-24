@@ -17,13 +17,15 @@ scanDirectories in Compile := Nil
 // add a test dependency on ScalaCheck
 // libraryDependencies += "org.scala-tools.testing" %% "scalacheck" % "1.8" % "test"
 libraryDependencies ++= {
-    val liftVersion = "2.4-M4"
+    val liftVersion = "2.4"
   	Seq(
-    	"net.liftweb" %% "lift-webkit" % liftVersion % "compile",
-    	"net.liftweb" %% "lift-mapper" % liftVersion % "compile",
-    	"net.liftweb" %% "lift-record" % liftVersion % "compile",
-    	"net.liftweb" %% "lift-wizard" % liftVersion % "compile",
-		"net.liftweb" %% "lift-widgets" % liftVersion % "compile",
+    	"net.liftweb" %% "lift-webkit" % liftVersion % "compile" withSources() ,
+    	"net.liftweb" %% "lift-util" % liftVersion % "compile" withSources() ,
+    	"net.liftweb" %% "lift-common" % liftVersion % "compile" withSources() ,
+    	"net.liftweb" %% "lift-mapper" % liftVersion % "compile" withSources() ,
+    	"net.liftweb" %% "lift-record" % liftVersion % "compile" withSources() ,
+    	"net.liftweb" %% "lift-wizard" % liftVersion % "compile" withSources() ,
+		"net.liftweb" %% "lift-widgets" % liftVersion % "compile" withSources() ,
 		"ch.qos.logback" % "logback-classic" % "0.9.26" % "compile",
 		"com.h2database" % "h2" % "1.2.138",
 		"mysql" % "mysql-connector-java" % "5.1.16",

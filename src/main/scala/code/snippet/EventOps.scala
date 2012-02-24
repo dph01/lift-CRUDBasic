@@ -13,27 +13,48 @@ import code.model.Event
 
 class EventOps extends Logger {
   
-  object eventVar extends RequestVar[Event](null)
+  // note that Event.create isn't being called here. Instead we're registering
+  // which function eventVar calls to get a default value in the case that the
+  // eventVar object is accessed before it is set
+  object eventVar extends RequestVar[Event](Event.create)
  
   def processSubmit() = {
-    // add code to do validations etc
-     eventVar.save
-     S.redirectTo("/event/listevent")
+    // if the validate or submit fails, reload the current page
+   eventVar.is.validate match {
+        case  Nil => if ( eventVar.is.save ) { 
+          S.notice("Event Saved")
+          S.redirectTo("/event/listevent")
+        } else {
+          S.error("Failed to save event to database")
+        }
+      case errors => S.error(errors)
+      }
   }
   
   def create = {
-    eventVar(Event.create)
+    // in the case that we're reloading the data from a previous form submission
+    // the eventVar will have been injected from the previous snippet. In this case
+    // we don't need to create a new Event
+    // if (! eventVar.set_?) eventVar(Event.create)
+    
     var event = eventVar.is
+    debug("initial event name value: " + eventVar.is.eventName)
+    
     "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
-    "#eventname" #> eventVar.is.eventName.toForm &
+    "#eventname" #> SHtml.text(eventVar.is.eventName, name => eventVar.is.eventName(name) ) &
     "#submit" #> SHtml.onSubmitUnit(processSubmit)
   }
 
   def edit = {
-   val event = eventVar.is
-   "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
-   "#eventname" #> eventVar.is.eventName.toForm &
-   "#submit" #> SHtml.onSubmitUnit(processSubmit)
+    if ( eventVar.set_? ) {
+      val event = eventVar.is
+      "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
+      "#eventname" #> SHtml.text(eventVar.is.eventName, name => eventVar.is.eventName(name) ) &
+      "#submit" #> SHtml.onSubmitUnit(processSubmit)
+    } else {
+      "*" #> "Naviation Error. Access the Edit page through the List or View pages."
+    }
+    
   }
 
  def list = {
@@ -46,8 +67,12 @@ class EventOps extends Logger {
     } )          
   }
   def view = {
-    var event = eventVar.is
-    "#eventname *" #> eventVar.is.eventName.asHtml &
-    "#edit" #> SHtml.link("/event/editevent", () => (eventVar(event)), Text("edit"))
+    if ( eventVar.set_? ) {
+      var event = eventVar.is
+      "#eventname *" #> eventVar.is.eventName.asHtml &
+      "#edit" #> SHtml.link("/event/editevent", () => (eventVar(event)), Text("edit"))
+    } else {
+      "*" #> "Navigation Error. Access the View page through the List page."
+    }
   }
  }

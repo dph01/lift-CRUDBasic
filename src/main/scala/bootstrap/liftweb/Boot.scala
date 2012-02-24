@@ -43,6 +43,7 @@ class Boot {
     def sitemap = SiteMap(
         Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
         Menu("Create Event") /  "event" / "createevent",
+        Menu("Create Event Test") /  "event" / "createeventdoesntwork",
         Menu("List Events") /  "event" / "listevent",
         Menu("Edit Event") /  "event" / "editevent" >> Hidden ,
         Menu("View Event") /  "event" / "viewevent" >> Hidden

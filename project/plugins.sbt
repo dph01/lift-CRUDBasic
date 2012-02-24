@@ -1,7 +1,7 @@
 // SBT Eclipse
 resolvers += Classpaths.typesafeResolver
 
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse" % "1.4.0")
+addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.0.0-M2")
 
 // xsbt-web-plugin
 resolvers ++= Seq(
@@ -11,4 +11,4 @@ Resolver.defaultIvyPatterns)
 )
 
 //Following means libraryDependencies += "com.github.siasia" %% "xsbt-web-plugin" % "0.1.1-<sbt version>""
-libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin" % (v+"-0.2.8"))
+libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin" % (v+"-0.2.10"))
