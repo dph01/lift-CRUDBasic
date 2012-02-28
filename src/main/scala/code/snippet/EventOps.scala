@@ -33,10 +33,8 @@ class EventOps extends Logger {
   
   def create = {
     // in the case that we're reloading the data from a previous form submission
-    // the eventVar will have been injected from the previous snippet. In this case
-    // we don't need to create a new Event
-    // if (! eventVar.set_?) eventVar(Event.create)
-    
+    // failure the eventVar will have been injected from the previous snippet. In this case
+    // calling eventVar.is will return that value, otherwise the default value will be returned
     var event = eventVar.is
     debug("initial event name value: " + eventVar.is.eventName)
     
@@ -66,6 +64,7 @@ class EventOps extends Logger {
                  SHtml.link("/event/listevent", () => {t.delete_!}, Text("delete"))}
     } )          
   }
+ 
   def view = {
     if ( eventVar.set_? ) {
       var event = eventVar.is
@@ -75,4 +74,6 @@ class EventOps extends Logger {
       "*" #> "Navigation Error. Access the View page through the List page."
     }
   }
+ 
+ 
  }
