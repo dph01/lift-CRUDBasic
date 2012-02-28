@@ -32,7 +32,7 @@ efficiently that I did.
     Then from within Eclipse, File->Import -> Existing Projects into Workspace, and navigate to your lift-CRUDBasic directory.
 
 # Running Version
-To see a running version of this code, go to [www.damianhelme.com/CRUDBasic](www.damianhelme.com/CRUDBasic)
+To see a running version of this code, go to [www.damianhelme.com/crudbasic](www.damianhelme.com/crudbasic)
 
 # Code orientation
 
@@ -244,6 +244,6 @@ We also have a hyper-link that navigates us to the editevent page, which using t
 sets the eventVar for the subsequent page request.
 
 
-For comments, questions, etc. please see the accompanying [blogpost](http://tech.damianhelme.com/twitter-bootstrap-navbar-dropdowns-and-lifts)
+For comments, questions, etc. please see the accompanying blogpost (TB)
 
 
