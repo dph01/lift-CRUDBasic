@@ -1,3 +1,5 @@
+## Work in progress ...
+
 This is very simple framework for creating your own CRUD functions for a single database entity.
 
 Lift has a few useful ways of generating CRUD operations automatically from your database classes i
@@ -5,16 +7,14 @@ Lift has a few useful ways of generating CRUD operations automatically from your
 Thanks to thoughtful class design and useful Scala language features you can easily override much of the CRUD functionality
 and layout to suit your particular needs. 
 
-I've found these tools to be excellent for rapid prototyping, or even production code that isn't wanting to do anything too flashy.
+I've found these tools to be excellent for rapid prototyping, or even production code that isn't wanting to do anything too complicated.
 However, in many cases, I've wanted to override so much of the default code that it made more sense to write my own CRUD code from the ground up.
 
-I found this to be surprisingly tricky; I had to put a bit of thought into how best to orgnaise the code,
+I found this to be surprisingly tricky in places; I had to put a bit of thought into how best to orgnaise the code,
 and there were a few subtle gotchas regarding the use of RequestVars that had me scratching me head for a while.
 
-This post is written to help other's who may be treading the same ground; hopefully to help people navigate through more 
+This post is written to help other's who may be treading the same ground.
 efficiently that I did.
-
-This assumes familiarity with ....
 
 # Setup
 
@@ -48,7 +48,7 @@ page. We can only navigate to the view and edit page through one of the other pa
 Note that for the sake of brevity I have not included a separate  page to prompt for confirmation when deleting
 an entity, as is sometimes the case in other CRUD frameworks. In this case deletion happens without prompting.
 
-[screen flow]
+[screen flow TBC]
 
 ## Model
 This example uses Lift's Mapper class to manage database access. The code for our event 
@@ -115,28 +115,12 @@ In this case I put it in the class scope, but it could also have been defined in
 with more complex requirements there are good reasons to put the RequestVar at file scope, but that's
 a topic for a future post.
 
-Secondly, it's worth while to look more closely at the declaration of the eventVar object.
-
-      object eventVar extends RequestVar[Event](Event.create)
-
-On first impressions it may appear that eventVar is initialised with a new Event object returned from Event.create.
-However, this is not the case. Looking at the signature of the RequestVar constructor we see that
-that it actually taking a function that returns an Event instance rather than an Event instance. 
-The RequestVar uses this
-function to create a 'default' Event instance in the event that eventVar object is accessed before 
-it has been set.
-
-Thus, in the EventOps.create function:
-
-     def create = {
-        ...
-        var event = eventVar.is
-        ...
-        
 The first time the a user loads the 'createevent' page, this eventVar will not have been set, so calling eventVar.is
 will trigger the Event.create method to be called to generate a new Event object. If the form submissions fails
 the next time the form is reloaded this eventVar will have been pre-populated with the Event values
 that caused the submission to fail. 
+
+(TBC - add link to other blog post)
 
 I'll step though the code in the create method to describe how this works:
 

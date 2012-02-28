@@ -1,5 +1,5 @@
 // set the name of the project
-name := "SBT Template"
+name := "CRUDBasic"
 
 version := "0.1.0"
 
