@@ -1,22 +1,24 @@
 package code
 package snippet
 
-import org.specs._
-import org.specs.runner.JUnit4
-import org.specs.runner.ConsoleRunner
+import org.specs2._
+// import org.specs2.runner.JUnit4
+// import org.specs2.runner.ConsoleRunner
 import net.liftweb._
 import http._
 import net.liftweb.util._
 import net.liftweb.common._
-import org.specs.matcher._
-import org.specs.specification._
+import org.specs2.matcher._
+import org.specs2.specification._
 import Helpers._
 import lib._
+// import org.junit.runners.JUnit4
+// import org.specs.specification.Examples
 
 
-class HelloWorldTestSpecsAsTest extends JUnit4(HelloWorldTestSpecs)
-object HelloWorldTestSpecsRunner extends ConsoleRunner(HelloWorldTestSpecs)
-
+// class HelloWorldTestSpecsAsTest extends JUnit4(HelloWorldTestSpecs)
+// object HelloWorldTestSpecsRunner extends ConsoleRunner(HelloWorldTestSpecs)
+/*
 object HelloWorldTestSpecs extends Specification {
   val session = new LiftSession("", randomString(20), Empty)
   val stableTime = now
@@ -24,6 +26,7 @@ object HelloWorldTestSpecs extends Specification {
   override def executeExpectations(ex: Examples, t: =>Any): Any = {
     S.initIfUninitted(session) {
       DependencyFactory.time.doWith(stableTime) {
+        super.e
         super.executeExpectations(ex, t)
       }
     }
@@ -41,3 +44,4 @@ object HelloWorldTestSpecs extends Specification {
     }
   }
 }
+*/

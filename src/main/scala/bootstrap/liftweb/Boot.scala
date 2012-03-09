@@ -43,7 +43,8 @@ class Boot {
     def sitemap = SiteMap(
         Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
         Menu("Create Event") /  "event" / "createevent",
-        // Menu("Create Event Test") /  "event" / "createeventdoesntwork",
+        Menu("Create Event Test") /  "event" / "createeventdoesntwork",
+        Menu("View Event Test") /  "event" / "vieweventdoesntwork",
         Menu("List Events") /  "event" / "listevent",
         Menu("Edit Event") /  "event" / "editevent" >> Hidden ,
         Menu("View Event") /  "event" / "viewevent" >> Hidden
@@ -54,7 +55,7 @@ class Boot {
 	       )
 
     def sitemapMutators = User.sitemapMutator
-
+    
     // set the sitemap.  Note if you don't want access control for
     // each page, just comment this line out.
     LiftRules.setSiteMapFunc(() => sitemapMutators(sitemap))

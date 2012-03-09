@@ -17,7 +17,7 @@ class EventOps extends Logger {
   // which function eventVar calls to get a default value in the case that the
   // eventVar object is accessed before it is set
   object eventVar extends RequestVar[Event](Event.create)
- 
+  
   def processSubmit() = {
     // if the validate or submit fails, reload the current page
    eventVar.is.validate match {
@@ -35,17 +35,20 @@ class EventOps extends Logger {
     // in the case that we're reloading the data from a previous form submission
     // failure the eventVar will have been injected from the previous snippet. In this case
     // calling eventVar.is will return that value, otherwise the default value will be returned
-    var event = eventVar.is
-    debug("initial event name value: " + eventVar.is.eventName)
     
-    "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
+      val xml = S.runTemplate(List("index")) 
+      debug("xml: " + xml )
     "#eventname" #> SHtml.text(eventVar.is.eventName, name => eventVar.is.eventName(name) ) &
     "#submit" #> SHtml.onSubmitUnit(processSubmit)
   }
 
   def edit = {
     if ( eventVar.set_? ) {
+      debug("in create event : " + eventVar.is)
       val event = eventVar.is
+      // as we're editing a an existing event, we need to make sure that any changes
+      // we make are on the existing event, thus the first function we need to call on submit
+      // is to set the eventVar to contain the existing event
       "#hidden" #> SHtml.hidden(() => eventVar(event) ) &
       "#eventname" #> SHtml.text(eventVar.is.eventName, name => eventVar.is.eventName(name) ) &
       "#submit" #> SHtml.onSubmitUnit(processSubmit)
@@ -74,6 +77,5 @@ class EventOps extends Logger {
       "*" #> "Navigation Error. Access the View page through the List page."
     }
   }
- 
  
  }
