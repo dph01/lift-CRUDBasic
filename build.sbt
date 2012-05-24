@@ -15,7 +15,6 @@ organization := "mycom"
 scanDirectories in Compile := Nil
 
 // add a test dependency on ScalaCheck
-// libraryDependencies += "org.scala-tools.testing" %% "scalacheck" % "1.8" % "test"
 libraryDependencies ++= {
     val liftVersion = "2.4"
   	Seq(
@@ -27,6 +26,7 @@ libraryDependencies ++= {
     	"net.liftweb" %% "lift-record" % liftVersion % "compile" withSources() ,
     	"net.liftweb" %% "lift-wizard" % liftVersion % "compile" withSources() ,
 		"net.liftweb" %% "lift-widgets" % liftVersion % "compile" withSources() ,
+		"net.liftweb" %% "lift-db" % liftVersion % "compile" withSources() ,
 		"ch.qos.logback" % "logback-classic" % "0.9.26" % "compile",
 		"com.h2database" % "h2" % "1.2.138",
 		"mysql" % "mysql-connector-java" % "5.1.16",
@@ -34,12 +34,9 @@ libraryDependencies ++= {
 		"org.mortbay.jetty" % "jetty" % "6.1.26" % "compile,test,container",
 		"org.mortbay.jetty" % "jetty-plus" % "6.1.26" % "compile,test,container",
 		"junit" % "junit" % "4.5" % "test",
-		// "org.scala-tools.testing" %% "specs" % "1.6.9" % "test",
+		"org.scala-tools.testing" %% "specs" % "1.6.9" % "test" withSources(),
     "org.scalatest" %% "scalatest" % "1.6.1" % "test",
-    "org.specs2" %% "specs2" % "1.8.2" % "compile,test",
-//     "org.seleniumhq.selenium" % "selenium" % "2.0rc2" % "test" ,
-  //   "org.seleniumhq.selenium" % "selenium-server" % "2.20.0" % "test" ,
-    // "org.seleniumhq.selenium" % "selenium" % "2.0rc2" % "compile,test" ,
+    "org.specs2" %% "specs2" % "1.8.2" % "compile,test" withSources(),
     "org.seleniumhq.selenium" % "selenium-server" % "2.20.0" % "compile,test" ,
     "org.scala-lang" % "scala-compiler" % "2.9.1"
   	)
@@ -48,7 +45,15 @@ libraryDependencies ++= {
 
 	scalacOptions ++= Seq("-unchecked", "-deprecation")
 	
+	javaOptions += "-Drun.mode=production"
+	
 	mainClass := Some("code.snippet.SeleniumExampleSpec")
+	
+	seq(ScctPlugin.scctSettings: _*)
+	
+	// so S.runTemplate can find template files during tests
+  unmanagedClasspath in Test <+= (baseDirectory) map { bd => Attributed.blank(bd / "src/main/webapp") }
+  
 	
 	// https://groups.google.com/forum/?hl=en#!activity/liftweb/Um5ghzYMDUoJ/liftweb/DDTzzxRbCNU/qEo0lIbTv4kJ
 	// needed for javaMail 1.4.4

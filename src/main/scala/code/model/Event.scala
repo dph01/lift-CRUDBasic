@@ -1,7 +1,7 @@
 package code.model
-import net.liftweb.mapper._
-import net.liftweb.util.TimeHelpers
+
 import net.liftweb.common.Logger
+import net.liftweb.mapper.{MappedString, ValidateLength, LongKeyedMetaMapper, LongKeyedMapper, IdPK}
 
 class Event extends LongKeyedMapper[Event] 
     with IdPK with Logger {
@@ -11,7 +11,6 @@ class Event extends LongKeyedMapper[Event]
       override def validations = valMinLen(3, "Event name must be more than 3 characters.") _ ::
           super.validations
     }
-    
 }
 
 object Event extends Event 

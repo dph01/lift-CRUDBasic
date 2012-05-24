@@ -17,11 +17,12 @@ import code.model._
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
  */
-class Boot {
+class Boot extends Logger {
   def boot {
+
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
-	new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
+           new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
 			     Props.get("db.url") openOr 
 			     "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
 			     Props.get("db.user"), Props.get("db.password"))
@@ -43,22 +44,20 @@ class Boot {
     def sitemap = SiteMap(
         Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
         Menu("Create Event") /  "event" / "createevent",
-        Menu("Create Event Test") /  "event" / "createeventdoesntwork",
-        Menu("View Event Test") /  "event" / "vieweventdoesntwork",
         Menu("List Events") /  "event" / "listevent",
         Menu("Edit Event") /  "event" / "editevent" >> Hidden ,
-        Menu("View Event") /  "event" / "viewevent" >> Hidden
-      // more complex because this menu allows anything in the
-      // /static path to be visible
-      // Menu(Loc("Static", Link(List("static"), true, "/static/index"), 
-	      //  "Static Content"))
+        Menu("View Event") /  "event" / "viewevent" >> Hidden,
+        Menu("Delete Event") /  "event" / "deleteevent" >> Hidden
 	       )
 
     def sitemapMutators = User.sitemapMutator
     
-    // set the sitemap.  Note if you don't want access control for
-    // each page, just comment this line out.
-    LiftRules.setSiteMapFunc(() => sitemapMutators(sitemap))
+    LiftRules.statelessReqTest.append {
+      case StatelessReqTest("stateless" :: _, req) => true
+    }
+      
+    LiftRules.setSiteMap(sitemap)
+
 
     // Use jQuery 1.4
     LiftRules.jsArtifacts = net.liftweb.http.js.jquery.JQuery14Artifacts
@@ -83,5 +82,6 @@ class Boot {
 
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
+    
   }
 }
