@@ -1,23 +1,21 @@
-# Build your own CRUD screens in Lift
-
-This article describes a simple approach for creating your own CRUD screens with Lift; 
-'CRUD' being the common acronym for the database operations of Create, Read, Update, Delete.
+This article describes a simple approach for creating your own CRUD screens with Lift ( 
+'CRUD' being the common acronym for the database operations of Create, Read, Update, Delete).
 
 ## Why build your own CRUD screens?
 Lift already has several useful libraries that automatically generate CRUD functionality for database classes
 e.g. CRUDify, LiftScreen, Mapper.toForm etc. So, why would you want to create CRUD screens yourself?
 
 The CRUD functionality that comes for free in Lift's libraries is excellent for rapid prototyping, 
-or even for use in production code where your requirements aren't too complicated. 
+or even for use in production where your requirements aren't too complicated. 
 
-The libraries have lots of usable, sensible default code that gets you going quickly, potentially 
+The libraries have lots of usable, sensible defaults that gets you going quickly, potentially 
 saving you lots of boiler plate code. 
 If what you want doesn't quite match what Lift provides, 
 thanks to thoughtful class design and useful Scala language features you can easily override much of the 
 default functionality.
 
 However, as your requirements grow you'll probably find your needs diverging more and more from 
-the functionality the Lift libraries provide, and you'll probably need to override more and more of the default code.
+the functionality the Lift libraries provide, and consequently you'll probably need to override more and more of the default code.
 
 You may want, for example, more control over the layout of the fields on the screen.
 You may want to combine combine multiple entities on the a single screen.
@@ -29,27 +27,27 @@ When this happens that it often makes more sense to write your own CRUD code fro
 
 ## What is covered?
 This article describes conventions for 
-organising the required code into methods, classes, files and folders, 
-naming of methods, classes, files and folders, 
-screen flow
+organising the required code into methods, classes, files and folders; naming conventions; and a simple  
+screen flow model.
 
 It gives example code for how to perform many of the common CRUD based tasks such as
 managing state on the server between successive page requests, rendering HTML from the data
 stored in the database, and so on.
 
-I'll illustrate these principles using simple single database entity called Event, 
+I illustrate these principles using simple single database entity called Event, 
 with a single field called 'eventName'.
 I use the Lift Mapper library to persist and retrieve data from the database, but the general principles could 
 be used equally well with Lift's Record library, or any other ORM for that matter.
 
 ## Prerequisites
 I assume the reader is familiar with basic Lift concepts. 
-As a minimum I would recommend the first four chapters of [Simply Lift](http://stable.simply.liftweb.net/)
-and / or the first eight chapters of [Exploring Lift](http://stable.simply.liftweb.net), up to the section on Mapper.
+As a minimum I would recommend the chapters 1-4 & 7 of [Simply Lift](http://stable.simply.liftweb.net/)
+and / or the first eight chapters of [Exploring Lift](http://stable.simply.liftweb.net), 
+up to the section on Mapper.
 
-You'll find much of the code in this piece has been already been presented in the above two works. 
-What I think is different is how to bring those coding techniques together in order to implement
-easily achievable DIY CRUD functionality.
+Most of the techniques I discuss here are presented in the above two works. 
+I'm simply highlighting how to bring these techniques together 
+in order to implement easily DIY CRUD functionality.
 
 ## Download the code
 Download the code discussed in this article from http://www.github.com/dph01/lift-CRUDBasic
@@ -57,17 +55,18 @@ Download the code discussed in this article from http://www.github.com/dph01/lif
 ## Running Version
 To see a running version of this code, go to [www.damianhelme.com/crudbasic](www.damianhelme.com/crudbasic)
 
-# Overview
+## Overview
 Each data entity has a single HTML page for each of the following: 
 
-  * listing all events
-  * viewing (i.e. read only) an existing event, 
-  * editing an existing event
-  * creating a new event, and 
-  * deleting an event.
+  * creating a new instance
+  * listing all existing instances
+  * editing an existing instance
+  * viewing (i.e. read only) an existing instance 
+  * deleting an existing instance.
 
-The diagram below shows the allowable page transitions. We enter the screen flow through either the list or create
-page. We can only navigate to the view, edit and delete pages through links on one of the other pages.
+The diagram below shows the allowable page transitions, illustrated with the Event example. 
+We enter the screen flow through either the list or create
+page and we can only navigate to the view, edit and delete pages through links on one of the other pages.
 
 [screen flow TBC]
 
@@ -81,7 +80,8 @@ For example, the code for our Event entity (in /src/main/scala/code/model/Event.
         
         object eventName extends MappedString(this, 30) 
             with ValidateLength {
-          override def validations = valMinLen(3, "Event name must contain at least 3 characters.") _ ::
+          override def validations = 
+            valMinLen(3, "Event name must contain at least 3 characters.") _ ::
               super.validations
         }
         
@@ -125,7 +125,7 @@ Each entity has an 'Ops' (short for CRUD Operations) snippet class.
 
 The Ops snippet class for each entity lives in its own file, which lives in the snippet package. 
 
-So, for our Event entity this is src/main/scala/code/snippet/EventOps.scala. 
+For our Event entity this is src/main/scala/code/snippet/EventOps.scala. 
 
 This class contains a single render method for each HTML template; the general structure being:
 
@@ -150,21 +150,20 @@ Lift returns a HTML form to the browser with the 'action' attribute set to be th
     </form>
 
 When the form is then submitted,
-the browser makes a HTTP PUT request to this same URL, sending the data in the body of the request. 
+the browser makes a HTTP PUT request to this same URL, sending the form data in the body of the request. 
 
-As the Lift developers we then have to decide what we return to the user in response to this PUT.
+As Lift developers we have to decide what we return to the user in response to this PUT.
 
-Within the context of this framework, we use the following convention: 
+Within the context of this approach, we use the following convention: 
 
   * If the form processing fails (e.g. the name field contains less than three characters)
 we return the same form HTML again, but this time with the 
-input fields populated with the contents that the user has just submitted.
-  * If the user clicks submit again the browser makes another PUT request, and so the
+input fields populated with the contents that the user has just submitted. 
+If the user clicks submit again the browser makes another PUT request, and so the
 cycle continues.
-
-On the other hand, if the form processing succeeds, 
+  * On the other hand, if the form processing succeeds, 
 we redirect the browser to the
-next page in the work-flow, in our case we choose the list events page.
+next page in the work-flow, which, in our case we choose the list events page.
 
 Thus, every time a form is processed the snippet behind the form is called at least twice; 
 once for the initial GET request and once more for every subsequent PUT request.
@@ -189,7 +188,7 @@ in some more complex use-cases file scope would be necessary to facilitate
 communication between multiple 'Ops' classes. 
 I'll be giving examples of such use-cases in a future blog post.
 
-For a more detailed discussion of RequestVars, see another of my other blog posts:
+For a more detailed discussion of RequestVars, see another of my other blog post:
 [Understanding Lift's RequestVars](http://tech.damianhelme.com/understanding-lifts-requestvars)
 
 ## Create
@@ -220,14 +219,16 @@ The corresponding snippet render method:
       }
       
 Most of this standard is Lift form / snippet processing that's described in detail 
-in Simply Lift and Exploring Lift. However, the following points are worth emphasising:
+in Simply Lift and Exploring Lift, so I won't give a complete commentary on the code here. 
+However, the following points are worth emphasising:
 
 When user makes the initial GET request on eventcreate.html, when line (1) is executed, eventRV.is is called for
 the first time on this eventRV instance. 
 As we have not yet initialised eventRV elsewhere, eventRV initialises itself
 calling Event.create, the default function specified when we declared eventRV.
 
-However, if create is being called on a PUT request, say for example after a form reload after validation has failed, 
+However, if create is being called on a PUT request, 
+say for example after a form reload after validation has failed, 
 eventRV.is returns the event that was previously set by the SHtml.hidden function at line (2). 
 
 SHtml.hidden inserts a hidden input field into the HTML page and registers an associated 
@@ -251,9 +252,10 @@ not have been set and so a new Event instance would be created.
 In our example, this would be OK since the contents of name field would be written to the 
 new instance (via the closure on line 3) when we submitted the form.
 The instance used on the previous request be lost to garbage collection in the usual way.
-So, including the SHtml.hidden line would prevent unnecessary garbage collection.
+So, the main advantage in this example of including the SHtml.hidden line 
+would be that it prevents unnecessary garbage collection.
 
-However there are some use cases where the SHtml.hidden line would be necessary.
+However there are some use cases where the SHtml.hidden line would be strictly necessary.
 It may have been the case that the Event class had some fields that were not set via the form. 
 For example, suppose that the Event class had member variable containing a foreign key to a
 Location instance (representing the many-to-one relationship in real-life 
@@ -262,23 +264,37 @@ Suppose also that the 'createvent' page can only be invoked from
 within the context of specific location e.g. from a link embedded in the 'viewlocation' page, 
 and when the event is created we want its location field to be set automatically.
 
-The actual code to do this it bit lengthy to give  here, but it would be possible
-for the create event page to know the context from which it have been called and the EventOps.create
-function to set the Event location member accordingly. 
+The actual code to do this it bit too lengthy to give  here, but it would be possible
+for the create event operation to know the location context from which it have been called and the 
+EventOps.create function to set the Event location member accordingly. 
 
 However, without the SHtml.hidden call in the EventOps.create, 
 this location setting would be lost if the form submission failed and the create page 
-was reloaded.
+was reloaded. 
 
 To finish with a brief run through of the rest of this method, 
 Line (3) uses a common pattern for binding the fields of a Mapper entity to a HTML form.
-& Line (4) registers a function that Lift will call to process the contents of the form
+Line (4) registers a function that Lift will call to process the contents of the form
 when it is submitted.
+
+      def processSubmit() = {
+        eventVar.is.validate match {
+          case  Nil => {
+            eventVar.is.save 
+            S.notice("Event Saved")
+            S.seeOther("/event/listevent")
+          } 
+          case errors => S.error(errors)
+        }
+        // exiting the function here causes the form to reload
+     }
+  
 These are standard Lift techniques, for more information  
 see, for example, (Simply Lift)[http://stable.simply.liftweb.net/#toc-Section-7.10]) .
 
 If processSubmit succeeds, we're taken to the listevent.html page which in-turn invokes the EventOps.list method. 
-The hidden method will still have set the eventRV, but as the list method does't use the eventRV, it will be silently ignored.
+Note that the SHtml.hidden method will still have set the eventRV, 
+but as the list method does't use the eventRV, it will be silently ignored.
 
 ## Moving between different HTML page views on the same data
 When we move between the list, view and edit pages, we use the event RequestVar to hold the Event instance in memory
@@ -296,7 +312,7 @@ The following sections describe this mechanism in more detail
 The listevent.html template:
 
     <div data-lift="lift:surround?with=default;at=content">
-      <h2 class="alt">Events</h2>
+      <h2>Events</h2>
         <a href="/event/createevent">New Event</a> <br />
         <div data-lift="EventOps.list">
           <table>
@@ -344,7 +360,7 @@ Bound with the view and edit link is the function '() => eventRV(t)'.
 This function is called on the server when the link is clicked and sets the eventRV for the scope of the resulting 
 page request to contain the event of the line which was clicked.
 
-#### Edit
+## Edit
 
 The editevent.html:
 
@@ -362,27 +378,25 @@ The editevent.html:
 The EventOps.edit snippet:
 
       def edit = {
-        if ( ! eventRV.set_? ) 
+        if ( ! eventRV.set_? )                              // 1
               S.redirectTo("/event/listevent")
         
-        val event = eventRV.is                              // 1
-       "#hidden" #> SHtml.hidden(() => eventRV(event) ) &  // 2
-       "#eventname" #> SHtml.text(eventRV.is.eventName,    // 3a
-                    name => eventRV.is.eventName(name) ) & // 3b
-       "#submit" #> SHtml.onSubmitUnit(processSubmit)       // 4
+        val event = eventRV.is                              // 2
+       "#hidden" #> SHtml.hidden(() => eventRV(event) ) &   // 3
+       "#eventname" #> SHtml.text(eventRV.is.eventName,     // 4a
+                    name => eventRV.is.eventName(name) ) &  // 4b
+       "#submit" #> SHtml.onSubmitUnit(processSubmit)       // 5
       }
 
 This snippet is very similar to the 'create' snippet we discussed previously except with the 
 following differences:
 
-We firstly make sure that the eventRV has been set. 
+At line (1), we firstly make sure that the eventRV has been set. 
 eventRV should have been set when the user clicks on the either of the edit links on the list or view pages.
 Here, we're trapping case that the user has typed in the url page directly. 
 
 The edit snippet has the same 'SHtml.hidden' mechanism for handling form submission failures, however in 
-this case it is strictly required.
-
-The event instance has an 'id' member variable
+this case it is strictly required. The event instance has an 'id' member variable
 corresponding to the primary key of the record in the database
 (Event inherits this field from IdPK). The id field is assigned a value when save is first called on the instance. 
 As we're editing an existing event, the id is non-null
@@ -392,7 +406,7 @@ If we didn't have the SHtml.hidden line, the subsequent PUT request would create
 which would have an uninitialised id, and so when saved to the database would result
 in a second database instance of the event being created.
 
-#### View
+## View
 The viewevent.html template:
 
     <div data-lift="lift:surround?with=default;at=content">
@@ -408,13 +422,12 @@ The viewevent.html template:
 The snippet code for the view operation is:
 
       def view = {
-        if ( eventRV.set_? ) {
-          var event = eventRV.is
-          "#eventname *" #> eventRV.is.eventName.asHtml &
-          "#edit" #> SHtml.link("/event/editevent", () => eventRV(event), Text("edit"))
-        } else {
-         "*" #> "Navigation Error. Access the View page through the List page."
-        }
+        if ( eventRV.set_? ) 
+          S.redirectTo("/event/listevent")
+          
+        var event = eventRV.is
+        "#eventname *" #> eventRV.is.eventName.asHtml &
+        "#edit" #> SHtml.link("/event/editevent", () => eventRV(event), Text("edit"))
       }
       
 This code is mostly similar to the other CRUD operations present so far.
@@ -454,7 +467,7 @@ is wanting to delete, and when executed calls the Mapper.delete_! function on th
 Hopefully this has given you a strong enough starting point from which you can
 start to build your own CRUD forms. After using this technique a couple of times
 I suspect you'll find it easy enough and quick enough to implement your own CRUD
-functionality that you may well not go back to the likes of CRUDify, Mapper.toForm etc at all.
+functionality that you may well not go back to the likes of CRUDify, Mapper.toForm etc at all :-)
  
 Please leave comments, thoughts, questions etc. 
 I'd be happy to add more detail if necessary.
