@@ -43,7 +43,7 @@ class Boot extends Logger {
     // Build SiteMap
     def sitemap = SiteMap(
         Menu.i("Home") / "index" >> User.AddUserMenusAfter, // the simple way to declare a menu
-        Menu("New Event") /  "event" / "createevent",
+        Menu("Create Event") /  "event" / "createevent",
         Menu("List Events") /  "event" / "listevent",
         Menu("Edit Event") /  "event" / "editevent" >> Hidden ,
         Menu("View Event") /  "event" / "viewevent" >> Hidden,
