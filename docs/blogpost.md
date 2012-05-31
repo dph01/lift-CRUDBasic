@@ -467,7 +467,7 @@ is wanting to delete, and when executed calls the Mapper.delete_! function on th
 Hopefully this has given you a strong enough starting point from which you can
 start to build your own CRUD forms. After using this technique a couple of times
 I suspect you'll find it easy enough and quick enough to implement your own CRUD
-functionality that you may well not go back to the likes of CRUDify, Mapper.toForm etc at all :-)
+functionality that you may well not go back to the likes of CRUDify at all :-)
  
 Please leave comments, thoughts, questions etc. 
 I'd be happy to add more detail if necessary.

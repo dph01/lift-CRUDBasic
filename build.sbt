@@ -49,7 +49,8 @@ libraryDependencies ++= {
 	
 	mainClass := Some("code.snippet.SeleniumExampleSpec")
 	
-	seq(ScctPlugin.scctSettings: _*)
+	// for the code coverage tool, sbt-scct
+	// seq(ScctPlugin.scctSettings: _*)
 	
 	// so S.runTemplate can find template files during tests
   unmanagedClasspath in Test <+= (baseDirectory) map { bd => Attributed.blank(bd / "src/main/webapp") }

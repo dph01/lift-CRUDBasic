@@ -13,7 +13,5 @@ Resolver.defaultIvyPatterns)
 //Following means libraryDependencies += "com.github.siasia" %% "xsbt-web-plugin" % "0.1.1-<sbt version>""
 libraryDependencies <+= sbtVersion(v => "com.github.siasia" %% "xsbt-web-plugin" % (v+"-0.2.10"))
 
-// scct
-// libraryDependencies += "ch.craven" %% "scct-plugin" % "0.2.1"
-
-addSbtPlugin("ch.craven" %% "scct-plugin" % "0.2.1")
+// sbt-scct
+// addSbtPlugin("ch.craven" %% "scct-plugin" % "0.2.1")
