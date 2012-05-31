@@ -31,5 +31,5 @@ You can see 100% test coverage of the Event and EventOps class using sbt-scct.
   * View the report at target/scala-2.9.1/coverage-report/coverage-report/index.html
 
 ## Running Version
-To see a running version of this code, go to [www.damianhelme.com/crudbasic](www.damianhelme.com/crudbasic)
+To see a running version of this code, go to [www.damianhelme.com/crudbasic](http://www.damianhelme.com/crudbasic)
 
