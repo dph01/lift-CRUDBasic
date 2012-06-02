@@ -15,20 +15,21 @@ thanks to thoughtful class design and useful Scala language features you can eas
 default functionality.
 
 However, as your requirements grow you'll probably find your needs diverging more and more from 
-the functionality the Lift libraries provide, and consequently you'll probably need to override more and more of the default code.
+the functionality the Lift libraries provide, and consequently needing to override 
+more and more of the default code.
 
 You may want, for example, more control over the layout of the fields on the screen.
 You may want to combine combine multiple entities on the a single screen.
 You may want more control over the processing logic invoked on a form submit.
-When this happens you may find yourself with overly bloated code, 
+Adding so much overriding code could easily leave you with
+overly bloated classes, 
 trying to coerce the Lift libraries to perform in ways that they were not designed to perform.
 
-When this happens that it often makes more sense to write your own CRUD code from the ground up.
+When this happens it often makes more sense to write your own CRUD code from the ground up.
 
 ## What is covered?
 This article describes conventions for 
-organising the required code into methods, classes, files and folders; naming conventions; and a simple  
-screen flow model.
+organising the required code into methods, classes, files and folders; naming conventions; and a simple screen flow model.
 
 It gives example code for how to perform many of the common CRUD based tasks such as
 managing state on the server between successive page requests, rendering HTML from the data
@@ -56,7 +57,7 @@ Download the code discussed in this article from http://www.github.com/dph01/lif
 To see a running version of this code, go to [www.damianhelme.com/crudbasic](www.damianhelme.com/crudbasic)
 
 ## Overview
-Each data entity has a single HTML page for each of the following: 
+This user interacts with each data entity has a single HTML page for each of the following: 
 
   * creating a new instance
   * listing all existing instances
@@ -69,6 +70,10 @@ We enter the screen flow through either the list or create
 page and we can only navigate to the view, edit and delete pages through links on one of the other pages.
 
 [screen flow TBC]
+
+The code is split over a model file, a snippet file and series of HTML templates as shown below:
+
+[folder structure TBC]
 
 ## Model
 We use Lift's Mapper class to manage database access. Each entity has its own scala file in the model package.
@@ -119,6 +124,8 @@ these pages is via links on other pages.
 Note that there is a redundant 'event' in the path. One could have just had /event/create, /event/edit
 However, having 'event' repeated in the filename (i.e. createevent) allows you to easily distinguish between 
 multiple open files in an IDE such as Ecliplse.
+
+The contents of each of the HTML templates is given below, adjacent to the corresponding snippet.
 
 ## Snippet
 Each entity has an 'Ops' (short for CRUD Operations) snippet class.
@@ -459,21 +466,22 @@ The EventOps.delete snippet:
     }
     
 The main technique to note here is that the deletion occurs by Lift calling the 
-<code>() =>{ e.delete_!}</code> funtion registered with the 'Yes' link. 
+`() =>{ e.delete_!}` funtion registered with the 'Yes' link. 
 This function forms a closure around the event instance that the user
-is wanting to delete, and when executed calls the Mapper.delete_! function on that instance.
+is wanting to delete, and when executed calls the `Mapper.delete_!` function on that instance.
 
 ## Summary
 Hopefully this has given you a strong enough starting point from which you can
-start to build your own CRUD forms. After using this technique a couple of times
-I suspect you'll find it easy enough and quick enough to implement your own CRUD
-functionality that you may well not go back to the likes of CRUDify at all :-)
+start to build your own CRUD forms. Please feel free to copy and past the example
+files given here
+
+After using this technique a couple of times
+I suspect you'll find it easy enough and quick enough for it to become your default
+starting point for all future CRUD functionality.
  
 Please leave comments, thoughts, questions etc. 
-I'd be happy to add more detail if necessary.
-
 
 ## Resources
-[Simply Lift](http://stable.simply.liftweb.net/), David Pollak
-[Exploring Lift](http://exploring.liftweb.net/master/index.html), 
-My blog post: [Understanding Lift's RequestVars](http://tech.damianhelme.com/understanding-lifts-requestvars)
+  * [Simply Lift](http://stable.simply.liftweb.net/), David Pollak
+  * [Exploring Lift](http://exploring.liftweb.net/master/index.html), Marius Danciu and Tyler Weir 
+  * My blog post: [Understanding Lift's RequestVars](http://tech.damianhelme.com/understanding-lifts-requestvars)

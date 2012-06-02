@@ -1,3 +1,20 @@
+/*
+ * Copyright 2012 Damian Helme
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+   
+   This code is derived from the template: https://github.com/lift/lift_24_sbt
+ */
 package bootstrap.liftweb
 
 import net.liftweb._
@@ -9,6 +26,8 @@ import http._
 import sitemap._
 import Loc._
 import mapper._
+import java.io.{File,FileInputStream}
+import net.liftweb.http.provider.servlet.HTTPServletContext
 
 import code.model._
 
@@ -83,5 +102,52 @@ class Boot extends Logger {
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
     
+    // when running in jetty, the following codes makes Lift look for a props file in
+    // $JETTY_HOME/resources/<context path>/ before looking in the usual places allowing
+    // you to edit props file without having to recompile the war
+    // start Jetty with: java -Djetty.resources.dir=$JETTY_HOME/resources -jar start.jar
+    val contextPath = LiftRules.context match { 
+      case c: HTTPServletContext => Full(c.path)
+      case _ => Empty
+    } 
+    info("Context Path is: " + contextPath )
+
+    val jettyResourcesDir = Box.!!(System.getProperty("jetty.resources.dir"))
+    info("got jetty.resource.dir from system properties: " + jettyResourcesDir)
+    val whereToLook = jettyResourcesDir.flatMap( dir => 
+      contextPath.map( cp => 
+      for ( 
+            propsname <- Props.toTry;
+            fullname = dir + cp + propsname() + "props";
+            file = new File(fullname);
+            if (file.exists) 
+          ) yield fullname -> { () => Full(new FileInputStream(file))}
+        )
+    )
+          
+    whereToLook.foreach( w => Props.whereToLook = () => w )
+    
+    // insert Google Analytics Tracking code into head of your html
+    // Thanks for Richard Dalloway for the following code 
+    // Copied and pasted from https://github.com/d6y/liftmodules-googleanalytics
+    import scala.xml.Unparsed
+    def headJs(id: String) = <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', '{Unparsed(id)}']);
+      _gaq.push(['_trackPageview']);
+      (function() {{
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; 
+        s.parentNode.insertBefore(ga, s);
+      }})();
+      </script>
+    
+    
+    Props.get("google.analytics.id") map headJs foreach { js =>
+      def addTracking(s: LiftSession, r: Req) : Unit = S.putInHead(js)
+      
+    LiftSession.onBeginServicing = addTracking _ :: LiftSession.onBeginServicing
+  }
   }
 }

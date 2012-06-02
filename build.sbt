@@ -35,7 +35,7 @@ libraryDependencies ++= {
 		"org.mortbay.jetty" % "jetty-plus" % "6.1.26" % "compile,test,container",
 		"junit" % "junit" % "4.5" % "test",
 		"org.scala-tools.testing" %% "specs" % "1.6.9" % "test" withSources(),
-    "org.scalatest" %% "scalatest" % "1.6.1" % "test",
+    "org.scalatest" %% "scalatest" % "1.8" % "test",
     "org.specs2" %% "specs2" % "1.8.2" % "compile,test" withSources(),
     "org.seleniumhq.selenium" % "selenium-server" % "2.20.0" % "compile,test" ,
     "org.scala-lang" % "scala-compiler" % "2.9.1"
