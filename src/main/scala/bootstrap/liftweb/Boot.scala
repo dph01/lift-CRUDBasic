@@ -38,7 +38,33 @@ import code.model._
  */
 class Boot extends Logger {
   def boot {
+ // when running in jetty, the following codes makes Lift look for a props file in
+    // $JETTY_HOME/resources/<context path>/ before looking in the usual places allowing
+    // you to edit props file without having to recompile the war
+    // start Jetty with: java -Djetty.resources=$JETTY_HOME/resources -jar start.jar
+    val contextPath = LiftRules.context match { 
+      case c: HTTPServletContext => Full(c.path)
+      case _ => Empty
+    } 
+    info("Context Path is: " + contextPath )
 
+    val jettyResourcesDir = Box.!!(System.getProperty("jetty.resources"))
+    info("got jetty.resources from system properties: " + jettyResourcesDir)
+    val whereToLook = jettyResourcesDir.flatMap( dir => 
+      contextPath.map( cp => 
+      for ( 
+            propsname <- Props.toTry;
+            fullname = dir + cp + propsname() + "props";
+            file = new File(fullname);
+            if (file.exists) 
+          ) yield fullname -> { () => Full(new FileInputStream(file))}
+        )
+    )
+          
+    info("adding the following on the Props.whereToLook: " + whereToLook.map(x => x.map( p => p._1)))
+    
+    whereToLook.foreach( w => Props.whereToLook = () => w )
+    
     if (!DB.jndiJdbcConnAvailable_?) {
       val vendor = 
            new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
@@ -102,32 +128,7 @@ class Boot extends Logger {
     // Make a transaction span the whole HTTP request
     S.addAround(DB.buildLoanWrapper)
     
-    // when running in jetty, the following codes makes Lift look for a props file in
-    // $JETTY_HOME/resources/<context path>/ before looking in the usual places allowing
-    // you to edit props file without having to recompile the war
-    // start Jetty with: java -Djetty.resources=$JETTY_HOME/resources -jar start.jar
-    val contextPath = LiftRules.context match { 
-      case c: HTTPServletContext => Full(c.path)
-      case _ => Empty
-    } 
-    info("Context Path is: " + contextPath )
-
-    val jettyResourcesDir = Box.!!(System.getProperty("jetty.resources"))
-    info("got jetty.resource from system properties: " + jettyResourcesDir)
-    val whereToLook = jettyResourcesDir.flatMap( dir => 
-      contextPath.map( cp => 
-      for ( 
-            propsname <- Props.toTry;
-            fullname = dir + cp + propsname() + "props";
-            file = new File(fullname);
-            if (file.exists) 
-          ) yield fullname -> { () => Full(new FileInputStream(file))}
-        )
-    )
-          
-    whereToLook.foreach( w => Props.whereToLook = () => w )
-    
-    // insert Google Analytics Tracking code into head of your html
+   // insert Google Analytics Tracking code into head of your html
     // Thanks for Richard Dalloway for the following code 
     // Copied and pasted from https://github.com/d6y/liftmodules-googleanalytics
     import scala.xml.Unparsed
