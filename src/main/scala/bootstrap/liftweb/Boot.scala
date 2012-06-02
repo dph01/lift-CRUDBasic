@@ -105,15 +105,15 @@ class Boot extends Logger {
     // when running in jetty, the following codes makes Lift look for a props file in
     // $JETTY_HOME/resources/<context path>/ before looking in the usual places allowing
     // you to edit props file without having to recompile the war
-    // start Jetty with: java -Djetty.resources.dir=$JETTY_HOME/resources -jar start.jar
+    // start Jetty with: java -Djetty.resources=$JETTY_HOME/resources -jar start.jar
     val contextPath = LiftRules.context match { 
       case c: HTTPServletContext => Full(c.path)
       case _ => Empty
     } 
     info("Context Path is: " + contextPath )
 
-    val jettyResourcesDir = Box.!!(System.getProperty("jetty.resources.dir"))
-    info("got jetty.resource.dir from system properties: " + jettyResourcesDir)
+    val jettyResourcesDir = Box.!!(System.getProperty("jetty.resources"))
+    info("got jetty.resource from system properties: " + jettyResourcesDir)
     val whereToLook = jettyResourcesDir.flatMap( dir => 
       contextPath.map( cp => 
       for ( 
