@@ -16,7 +16,7 @@ To import the project into Eclipse, from within Sbt:
 
         >eclipse with-source=true
         
-    Then from within Eclipse, File->Import -> Existing Projects into Workspace, and navigate to your lift-CRUDBasic directory.
+Then from within Eclipse, File->Import -> Existing Projects into Workspace, and navigate to your lift-CRUDBasic directory.
     
 As a bonus ;-) the project comes with a suite of Selenium-based tests. To run the tests, from within Sbt:
 
