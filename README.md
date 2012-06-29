@@ -4,13 +4,14 @@ This is example code for building your own CRUD screens in Lift.
 
 For a complete write-up, see the blog-post: TBC
 
-
 To download, build and run:
 
         $ git clone git://github.com/dph01/lift-CRUDBasic.git
         $ cd lift-CRUDBasic
         $ ./sbt
         >container:start
+
+In a browser, go to http://localhost:8080 to see the app runing.
 
 To import the project into Eclipse, from within Sbt:
 
